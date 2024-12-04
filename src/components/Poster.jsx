@@ -1,57 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Poster({ ImagesData }) {
-  const [filteredImages, setFilteredImages] = useState(
-    ImagesData.map((image) => {
+  const [filteredImages, setFilteredImages] = useState([]);
+
+  useEffect(() => {
+    const initialImages = ImagesData.map((image) => {
       if (image.error) {
         return {
-          url: "https://img.freepik.com/free-vector/loading-circles-blue-gradient_78370-2646.jpg?ga=GA1.1.754928087.1729416869&semt=ais_hybrid",
+          url: "https://img.freepik.com/premium-vector/loading-symbol-vector_427757-728.jpg?ga=GA1.1.754928087.1729416869&semt=ais_hybrid",
           ready: true,
           error: true,
           isLoading: true,
         };
       }
-      if (image.ready) {
-        return image;
-      }
-    })
-  );
+      return image.ready ? image : null;
+    }).filter(Boolean);
 
-  filteredImages.forEach((image, index) => {
-    if (image.isLoading) {
-      setTimeout(() => {
-        setFilteredImages((prevImages) =>
-          prevImages.map((img, i) =>
-            i === index
-              ? {
-                  ...img,
-                  url: "https://media.istockphoto.com/id/1432243027/photo/3d-rendering-of-framed-lighten-x-alphabet-shape-on-grunge-floor.webp?a=1&b=1&s=612x612&w=0&k=20&c=JFgjtk8MZ8AFZqbQSYAbpSi-OjMalY9FCSXrF3wVlmM=",
-                  isLoading: false,
-                }
-              : img
-          )
-        );
-      }, 5000);
+    while (initialImages.length < 4) {
+      initialImages.push({
+        url: "https://img.freepik.com/free-psd/contact-icon-illustration-isolated_23-2151903337.jpg?ga=GA1.1.754928087.1729416869&semt=ais_hybrid",
+        ready: true,
+        error: false,
+      });
     }
-  });
 
-  while (filteredImages.length < 4) {
-    filteredImages.push({
-      url: "https://img.freepik.com/free-psd/contact-icon-illustration-isolated_23-2151903337.jpg?ga=GA1.1.754928087.1729416869&semt=ais_hybrid",
-      ready: true,
-      error: false,
-    });
-  }
+    setFilteredImages(initialImages);
 
-  const ErrorImage = filteredImages.reduce(
-    (acc, item) => {
-      if (item.error) {
-        acc.count = (acc.count || 0) + 1;
+    const timers = initialImages.map((image, index) => {
+      if (image.isLoading) {
+        return setTimeout(() => {
+          setFilteredImages((prevImages) =>
+            prevImages.map((img, i) =>
+              i === index
+                ? {
+                    ...img,
+                    url: "https://media.istockphoto.com/id/1432243027/photo/3d-rendering-of-framed-lighten-x-alphabet-shape-on-grunge-floor.webp?a=1&b=1&s=612x612&w=0&k=20&c=JFgjtk8MZ8AFZqbQSYAbpSi-OjMalY9FCSXrF3wVlmM=",
+                    isLoading: false,
+                  }
+                : img
+            )
+          );
+        }, 5000);
       }
-      return acc;
-    },
-    { count: 0 }
-  );
+      return null;
+    });
+
+    return () => {
+      timers.forEach((timer) => timer && clearTimeout(timer));
+    };
+  }, [ImagesData]);
+
+  const errorCount = filteredImages.filter((image) => image.error).length;
 
   return (
     <div className="text-white bg-slate-900 h-56 w-full flex items-center gap-6 px-6 py-4 rounded-lg justify-center relative">
@@ -80,7 +79,7 @@ export default function Poster({ ImagesData }) {
       </div>
       <div className="text-left ml-32">
         <p>
-          {ErrorImage.count > 0 ? (
+          {errorCount > 0 ? (
             <span className="text-red-500">
               <img
                 className="w-32 h-32 object-cover"
