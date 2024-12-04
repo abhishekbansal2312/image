@@ -3,13 +3,14 @@ import AddItem from "../components/AddItem";
 import Poster from "../components/Poster";
 import Modal from "../components/Modal";
 import Items from "../components/Items";
-import { toast } from "react-hot-toast"; // Import toast
+import { toast } from "react-hot-toast";
 
 const Image = () => {
   const [ImagesData, setImagesData] = useState([]);
   const [form, setForm] = useState({
     url: "",
     ready: false,
+    error: false,
   });
   const [editIndex, setEditIndex] = useState(-1);
   const [showModal, setShowModal] = useState(false);
@@ -23,25 +24,34 @@ const Image = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (editIndex === -1 && ImagesData.length >= 4) {
+      toast.error("You can't add more than 4 items!");
+      return;
+    }
+    const updatedForm = {
+      ...form,
+      error: !form.ready,
+    };
+
     let newImageData;
 
     if (editIndex === -1) {
-      newImageData = [...ImagesData, form];
-      toast.success("Item added successfully!"); // Toast on adding item
+      newImageData = [...ImagesData, updatedForm];
+      toast.success("Item added successfully!");
     } else {
       newImageData = ImagesData.map((item, index) =>
-        index === editIndex ? form : item
+        index === editIndex ? updatedForm : item
       );
-      toast.success("Item updated successfully!"); // Toast on editing item
+      toast.success("Item updated successfully!");
     }
 
     setImagesData(newImageData);
     localStorage.setItem("items", JSON.stringify(newImageData));
-    setForm({ url: "", ready: false });
+    setForm({ url: "", ready: false, error: true });
     setShowModal(false);
     setEditIndex(-1);
   };
-
   const handleEdit = (index) => {
     setEditIndex(index);
     setForm(ImagesData[index]);
@@ -52,14 +62,14 @@ const Image = () => {
     const newImageData = ImagesData.filter((_, i) => i !== index);
     setImagesData(newImageData);
     localStorage.setItem("items", JSON.stringify(newImageData));
-    toast.error("Item removed successfully!"); // Toast on removing item
+    toast.error("Item removed successfully!");
   };
 
   return (
     <div className="container min-h-screen p-4">
       <div className="flex justify-center mb-8">
-        <div className="p-4 rounded-lg w-full max-w-2xl">
-          <Poster />
+        <div className="p-4 rounded-lg w-full ">
+          <Poster ImagesData={ImagesData} count={ImagesData.length} />
         </div>
       </div>
 
