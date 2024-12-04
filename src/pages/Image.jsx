@@ -66,14 +66,14 @@ const Image = () => {
   };
 
   return (
-    <div className="container min-h-screen p-4">
-      <div className="flex justify-center mb-8">
+    <div className="container w-full p-4">
+      <div className="flex justify-center mb-2">
         <div className="p-4 rounded-lg w-full ">
           <Poster ImagesData={ImagesData} count={ImagesData.length} />
         </div>
       </div>
 
-      <div className="flex mb-4">
+      <div className="flex ml-4 ">
         <button
           className="bg-blue-500 text-white p-2 rounded-md"
           onClick={() => setShowModal(true)}
