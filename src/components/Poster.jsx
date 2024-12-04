@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { toast } from "react-hot-toast";
+import React from "react";
 
 export default function Poster({ ImagesData }) {
   const filteredImages = ImagesData.filter((image) => image.ready);
@@ -42,7 +41,7 @@ export default function Poster({ ImagesData }) {
           >
             <img
               src={image.url}
-              alt={`Image ${index + 1}`}
+              alt={`img ${index + 1}`}
               className="h-14 w-14 object-cover rounded-full"
             />
 
@@ -65,7 +64,7 @@ export default function Poster({ ImagesData }) {
               <img
                 className="w-32 h-32 object-cover"
                 src="https://img.freepik.com/free-vector/forgot-password-concept-illustration_114360-1328.jpg?ga=GA1.1.754928087.1729416869&semt=ais_hybrid"
-                alt="Error Image"
+                alt="Error"
               />
             </span>
           ) : (
@@ -73,7 +72,7 @@ export default function Poster({ ImagesData }) {
               <img
                 className="w-32 h-32 object-cover"
                 src="https://img.freepik.com/free-vector/ok-concept-illustration_114360-2060.jpg?ga=GA1.1.754928087.1729416869&semt=ais_hybrid"
-                alt="Success Image"
+                alt="Success"
               />
             </span>
           )}

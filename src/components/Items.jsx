@@ -11,7 +11,7 @@ const Items = ({ imagesData, onEdit, onRemove }) => {
         >
           <img
             src={item.url}
-            alt={`Image ${index}`}
+            alt={"img"}
             className="w-full h-48 object-cover mb-4 rounded-md"
           />
 
