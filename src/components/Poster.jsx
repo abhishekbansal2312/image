@@ -1,15 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function Poster({ ImagesData }) {
-  const filteredImages = ImagesData.filter((image) => image.ready);
+  const [filteredImages, setFilteredImages] = useState(
+    ImagesData.map((image) => {
+      if (image.error) {
+        return {
+          url: "https://img.freepik.com/free-vector/loading-circles-blue-gradient_78370-2646.jpg?ga=GA1.1.754928087.1729416869&semt=ais_hybrid",
+          ready: true,
+          error: true,
+          isLoading: true,
+        };
+      }
+      if (image.ready) {
+        return image;
+      }
+    })
+  );
 
-  ImagesData.forEach((image) => {
-    if (image.error) {
-      filteredImages.push({
-        url: "https://media.istockphoto.com/id/1432243027/photo/3d-rendering-of-framed-lighten-x-alphabet-shape-on-grunge-floor.webp?a=1&b=1&s=612x612&w=0&k=20&c=JFgjtk8MZ8AFZqbQSYAbpSi-OjMalY9FCSXrF3wVlmM=",
-        ready: true,
-        error: true,
-      });
+  filteredImages.forEach((image, index) => {
+    if (image.isLoading) {
+      setTimeout(() => {
+        setFilteredImages((prevImages) =>
+          prevImages.map((img, i) =>
+            i === index
+              ? {
+                  ...img,
+                  url: "https://media.istockphoto.com/id/1432243027/photo/3d-rendering-of-framed-lighten-x-alphabet-shape-on-grunge-floor.webp?a=1&b=1&s=612x612&w=0&k=20&c=JFgjtk8MZ8AFZqbQSYAbpSi-OjMalY9FCSXrF3wVlmM=",
+                  isLoading: false,
+                }
+              : img
+          )
+        );
+      }, 5000);
     }
   });
 
@@ -44,7 +66,6 @@ export default function Poster({ ImagesData }) {
               alt={`img ${index + 1}`}
               className="h-14 w-14 object-cover rounded-full"
             />
-
             <div className="tooltip group-hover:block hidden absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-black text-white text-sm p-2 rounded-md">
               <p>URL: {image.url}</p>
               <p>Ready: {image.ready ? "Ready" : "Not Ready"}</p>
