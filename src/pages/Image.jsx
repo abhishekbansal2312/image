@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import AddItem from "../components/AddItem";
+import Form from "../components/Form";
 import Poster from "../components/Poster";
 import Modal from "../components/Modal";
 import Items from "../components/Items";
@@ -96,7 +96,7 @@ const Image = () => {
           onClose={() => setShowModal(false)}
           title={editIndex === -1 ? "Add Item" : "Edit Item"}
         >
-          <AddItem
+          <Form
             form={form}
             handleSubmit={handleSubmit}
             setForm={setForm}
