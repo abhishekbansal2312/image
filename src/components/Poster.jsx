@@ -14,7 +14,7 @@ export default function Poster({ ImagesData }) {
         };
       }
       return image.ready ? image : null;
-    }).filter(Boolean);
+    });
 
     while (initialImages.length < 4) {
       initialImages.push({
@@ -28,25 +28,36 @@ export default function Poster({ ImagesData }) {
 
     const timers = initialImages.map((image, index) => {
       if (image.isLoading) {
-        return setTimeout(() => {
-          setFilteredImages((prevImages) =>
-            prevImages.map((img, i) =>
-              i === index
-                ? {
-                    ...img,
-                    url: "https://media.istockphoto.com/id/1432243027/photo/3d-rendering-of-framed-lighten-x-alphabet-shape-on-grunge-floor.webp?a=1&b=1&s=612x612&w=0&k=20&c=JFgjtk8MZ8AFZqbQSYAbpSi-OjMalY9FCSXrF3wVlmM=",
-                    isLoading: false,
-                  }
-                : img
-            )
-          );
+        let attempts = 0;
+        const intervalId = setInterval(() => {
+          if (attempts < 3 && image.error) {
+            attempts++;
+            setFilteredImages((prevImages) =>
+              prevImages.map((img, i) =>
+                i === index
+                  ? {
+                      ...img,
+                      url:
+                        attempts === 3
+                          ? "https://media.istockphoto.com/id/1432243027/photo/3d-rendering-of-framed-lighten-x-alphabet-shape-on-grunge-floor.webp?a=1&b=1&s=612x612&w=0&k=20&c=JFgjtk8MZ8AFZqbQSYAbpSi-OjMalY9FCSXrF3wVlmM="
+                          : img.url,
+                      isLoading: attempts !== 3,
+                      error: attempts === 3 ? false : img.error,
+                    }
+                  : img
+              )
+            );
+          } else {
+            clearInterval(intervalId);
+          }
         }, 5000);
+        return intervalId;
       }
       return null;
     });
 
     return () => {
-      timers.forEach((timer) => timer && clearTimeout(timer));
+      timers.forEach((timer) => timer && clearInterval(timer));
     };
   }, [ImagesData]);
 
@@ -63,7 +74,9 @@ export default function Poster({ ImagesData }) {
             <img
               src={image.url}
               alt={`img ${index + 1}`}
-              className="h-14 w-14 object-cover rounded-full"
+              className={`h-14 w-14 object-cover rounded-full ${
+                image.isLoading ? "opacity-50" : ""
+              }`}
             />
             <div className="tooltip group-hover:block hidden absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-black text-white text-sm p-2 rounded-md">
               <p>URL: {image.url}</p>
